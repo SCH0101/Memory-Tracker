@@ -17,8 +17,8 @@ export function PromptSettingsButton() {
 
   useEffect(() => {
     if (!data) return;
-    setIndustry(data.settings.tabs.overview.industry_prompt);
-    setCompany(data.settings.tabs.overview.company_prompt);
+    setIndustry(data.settings.tabs.overview.industry_prompt || data.overview_api_prompts.industry);
+    setCompany(data.settings.tabs.overview.company_prompt || data.overview_api_prompts.company);
   }, [data]);
 
   useEffect(() => {
@@ -41,7 +41,7 @@ export function PromptSettingsButton() {
       const result = await api.updateRagSettings(settings);
       qc.setQueryData(["promptSettings"], { ...data, settings: result.settings });
       qc.invalidateQueries({ queryKey: ["overview"] });
-      setMessage("Saved. The next Overview request will use these instructions.");
+      setMessage("Saved. The next Overview request will use these prompts.");
     } catch (err) {
       setMessage(`Save failed: ${String(err)}`);
     } finally {
@@ -64,7 +64,7 @@ export function PromptSettingsButton() {
           <div className="flex items-center justify-between border-b px-5 py-4">
             <div>
               <h2 id="prompt-settings-title" className="font-bold">Prompt settings</h2>
-              <p className="mt-1 text-xs text-muted-foreground">Add instructions to the Overview question sent to the API. Leave blank to use the default.</p>
+              <p className="mt-1 text-xs text-muted-foreground">Edit the question sent to the ES API. The selected provider and publication filters still apply. Leave blank to restore the default.</p>
             </div>
             <button type="button" aria-label="Close settings" disabled={saving} onClick={() => setOpen(false)} className="rounded-md p-2 hover:bg-muted"><X className="h-4 w-4" /></button>
           </div>
@@ -73,11 +73,11 @@ export function PromptSettingsButton() {
               : error ? <p className="text-sm text-destructive">Failed to load prompts: {String(error)}</p>
               : <>
                 <label className="block text-sm font-semibold">Industry Overview prompt
-                  <textarea value={industry} onChange={(event) => setIndustry(event.target.value)} rows={8} maxLength={8000} disabled={saving}
+                  <textarea value={industry} onChange={(event) => setIndustry(event.target.value)} rows={8} maxLength={11000} disabled={saving}
                     className="mt-2 w-full resize-y rounded-md border bg-background p-3 text-sm font-normal leading-relaxed" placeholder="Enter instructions for the Arete and other provider overviews..." />
                 </label>
                 <label className="block text-sm font-semibold">Company Overview prompt
-                  <textarea value={company} onChange={(event) => setCompany(event.target.value)} rows={8} maxLength={8000} disabled={saving}
+                  <textarea value={company} onChange={(event) => setCompany(event.target.value)} rows={8} maxLength={11000} disabled={saving}
                     className="mt-2 w-full resize-y rounded-md border bg-background p-3 text-sm font-normal leading-relaxed" placeholder="Enter instructions for the company overview..." />
                 </label>
               </>}

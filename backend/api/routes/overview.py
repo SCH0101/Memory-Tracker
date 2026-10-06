@@ -1571,34 +1571,9 @@ async def _gather_overview_inputs() -> tuple[list[dict], str, dict[str, dict], d
     return rag_charts, "".join(blocks), source_index, broker_result[2]
 
 
-async def _direct_es_overview(view: str, refresh: bool = False, broker: str | None = None):
-    """ES owns research and final composition; Memory only caches and displays."""
-    from ...services.es_rag_gateway import get_es_rag_gateway, EsRagContractError
-    from .chat_bridge import _ask_source_filters, _qualify_es_markdown_links
-    await _ensure_cache_table()
-    today = date.today()
-    source_filters = _ask_source_filters(get_tab_sources("overview")) or {}
-    filters = {**source_filters, "date_from": (today-timedelta(days=_OVERVIEW_RECENCY_DAYS)).isoformat(),
-               "date_to": today.isoformat()}
-    if view == "industry" and broker:
-        filters["brokers"] = [broker]
+
+def default_es_overview_question(view: str, broker: str | None = None) -> str:
     broker_display = "BofA" if broker == "BOFA" else broker
-    override = get_tab_prompt("overview", view+"_prompt") or ""
-    fingerprint = __import__('hashlib').sha256(json.dumps(
-        {"filters":filters,"prompt":override},sort_keys=True).encode()).hexdigest()[:16]
-    cache_version = "v4" if view == "industry" else "v2"
-    cache_key = f"{view}_es_direct_answer_{cache_version}_{fingerprint}"
-    if not refresh:
-        cached = _cache.get(cache_key) or await _load_db_cache(cache_key)
-        if cached:
-            cached_data = cached["data"]
-            existing_sources = cached_data.get("_source_index") or {}
-            existing_sources.update(await _overview_citation_sources(
-                cached_data.get("answer_markdown", ""), client=None, filters=filters,
-                known_ids=set(existing_sources),
-            ))
-            cached_data["_source_index"] = existing_sources
-            return cached_data
     focus = (
         "Use sections: Executive summary; Demand and supply; DRAM pricing; NAND pricing; "
         "HBM and AI memory; Inventory; Capacity and capex; Bull case; Bear case. "
@@ -1626,8 +1601,41 @@ async def _direct_es_overview(view: str, refresh: bool = False, broker: str | No
         "State missing evidence explicitly. Do not claim all brokers were reviewed unless verified. "
         "Do not return JSON or invented chart references."
     )
-    if override:
-        question += "\nAdditional user Overview instructions:\n"+override
+    return question
+
+
+async def _direct_es_overview(view: str, refresh: bool = False, broker: str | None = None):
+    """ES owns research and final composition; Memory only caches and displays."""
+    from ...services.es_rag_gateway import get_es_rag_gateway, EsRagContractError
+    from .chat_bridge import _ask_source_filters, _qualify_es_markdown_links
+    await _ensure_cache_table()
+    today = date.today()
+    source_filters = _ask_source_filters(get_tab_sources("overview")) or {}
+    filters = {**source_filters, "date_from": (today-timedelta(days=_OVERVIEW_RECENCY_DAYS)).isoformat(),
+               "date_to": today.isoformat()}
+    if view == "industry" and broker:
+        filters["brokers"] = [broker]
+    broker_display = "BofA" if broker == "BOFA" else broker
+    override = get_tab_prompt("overview", view+"_prompt") or ""
+    fingerprint = __import__('hashlib').sha256(json.dumps(
+        {"filters":filters,"prompt":override},sort_keys=True).encode()).hexdigest()[:16]
+    cache_version = "v5" if view == "industry" else "v3"
+    cache_key = f"{view}_es_direct_answer_{cache_version}_{fingerprint}"
+    if not refresh:
+        cached = _cache.get(cache_key) or await _load_db_cache(cache_key)
+        if cached:
+            cached_data = cached["data"]
+            existing_sources = cached_data.get("_source_index") or {}
+            existing_sources.update(await _overview_citation_sources(
+                cached_data.get("answer_markdown", ""), client=None, filters=filters,
+                known_ids=set(existing_sources),
+            ))
+            cached_data["_source_index"] = existing_sources
+            return cached_data
+    question = override or default_es_overview_question(view)
+    if view == "industry" and broker:
+        question = (f"This is the {broker_display} section. Summarize only {broker_display} source documents. "
+                    f"Do not compare with or cite other providers.\n" + question)
     if len(question)>12000:
         raise EsRagContractError("Overview instructions exceed ES's 12000-character question limit",operation="overview")
     client = get_es_rag_gateway()

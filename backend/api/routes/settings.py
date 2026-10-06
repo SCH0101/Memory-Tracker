@@ -94,7 +94,7 @@ Use retrieved ES RAG text/table chunks as primary evidence and chart captions on
 
 @router.get("/rag")
 async def get_rag_settings():
-    from .overview import _SECTION_QUERIES
+    from .overview import _SECTION_QUERIES, default_es_overview_question
 
     settings = load_rag_settings()
     overview_sections = [
@@ -116,6 +116,10 @@ async def get_rag_settings():
         "overview_sections": overview_sections,
         "source_options": list(SOURCE_OPTIONS),
         "prompt_templates": _PROMPT_TEMPLATES,
+        "overview_api_prompts": {
+            "industry": default_es_overview_question("industry"),
+            "company": default_es_overview_question("company"),
+        },
     }
 
 

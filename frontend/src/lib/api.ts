@@ -300,6 +300,7 @@ export interface RagSettingsResponse {
   overview_sections: RagOverviewSectionSetting[];
   source_options: string[];
   prompt_templates: RagPromptTemplates;
+  overview_api_prompts: { industry: string; company: string };
 }
 
 export interface ExcelIngestResult {
