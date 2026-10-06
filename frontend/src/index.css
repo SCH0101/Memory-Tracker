@@ -1,0 +1,220 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  height: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 3px;
+}
+
+.mc-cite {
+  border-bottom: 1px dotted hsl(var(--muted-foreground) / 0.75);
+  cursor: help;
+  position: relative;
+}
+
+.mc-cite:hover::after,
+.mc-cite:focus::after {
+  content: attr(data-cite);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  z-index: 100;
+  max-width: 420px;
+  width: max-content;
+  padding: 6px 9px;
+  border-radius: 4px;
+  background: #111;
+  color: #fff;
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.18);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.35;
+  white-space: pre-line;
+  pointer-events: none;
+}
+
+.mc-cite:hover::before,
+.mc-cite:focus::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 12px;
+  z-index: 100;
+  border: 4px solid transparent;
+  border-top-color: #111;
+  pointer-events: none;
+}
+
+.mc-cite-chip {
+  align-items: center;
+  background: #0b1f3a;
+  border: 1px solid #1e3a5f;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  margin: 0 2px;
+  max-width: 88px;
+  padding: 2px 5px;
+  position: relative;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+.mc-cite-link {
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  text-decoration: none;
+  vertical-align: middle;
+}
+
+.mc-cite-chip:hover,
+.mc-cite-chip:focus {
+  background: #12355f;
+  border-color: #2b5f9a;
+  color: #fff;
+  cursor: pointer;
+}
+
+.mc-cite-chip:hover::after,
+.mc-cite-chip:focus::after {
+  content: attr(data-cite);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  z-index: 100;
+  max-width: 420px;
+  width: max-content;
+  padding: 6px 9px;
+  border-radius: 4px;
+  background: #111;
+  color: #fff;
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.18);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-transform: none;
+  white-space: pre-line;
+  pointer-events: none;
+}
+
+.mc-cite-chip:hover::before,
+.mc-cite-chip:focus::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 12px;
+  z-index: 100;
+  border: 4px solid transparent;
+  border-top-color: #111;
+  pointer-events: none;
+}
+
+.mc-cite-badge {
+  align-items: center;
+  background: #0b1f3a;
+  border: 1px solid #1e3a5f;
+  border-radius: 4px;
+  color: #fff;
+  display: inline-flex;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  margin: 0 3px;
+  padding: 2px 5px;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+.mc-cite-link:hover .mc-cite-badge,
+.mc-cite-link:focus-visible .mc-cite-badge { background: #12355f; border-color: #2b5f9a; }
+.mc-cite-badge--unavailable { opacity: .65; }
+
+.mc-cite-block {
+  cursor: help;
+  position: relative;
+}
+
+.mc-cite-block:hover::after,
+.mc-cite-block:focus::after {
+  content: attr(data-cite);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  z-index: 100;
+  max-width: 420px;
+  width: max-content;
+  padding: 6px 9px;
+  border-radius: 4px;
+  background: #111;
+  color: #fff;
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.18);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.35;
+  white-space: pre-line;
+  pointer-events: none;
+}
